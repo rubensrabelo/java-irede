@@ -64,7 +64,7 @@ public class Main {
     }
 
     private static void addTransactionFlow(Scanner scanner) {
-        System.out.print("Tipo (REVENUE/EXPENSE): ");
+        System.out.print("Tipo: ");
         String type = scanner.nextLine().toUpperCase();
 
         System.out.print("Categoria: ");
@@ -97,7 +97,7 @@ public class Main {
         }
         for (int i = 0; i < list.size(); i++) {
             Transaction t = list.get(i);
-            String output = "[" + i + "] " + t.getType() + " | " + t.getCategory() + " | " + Formatter.formatCurrency(t.getAmount());
+            String output = "[" + i + "] " + t.getType().getDescription() + " | " + t.getCategory() + " | " + Formatter.formatCurrency(t.getAmount());
             if (t instanceof MonthlyTransaction mt) {
                 output += " | Período: " + Formatter.formatYearMonth(mt.getMonthYear());
             } else {

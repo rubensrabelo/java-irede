@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
+
 public class MonthlyTransaction extends Transaction {
     private YearMonth monthYear;
 
@@ -51,7 +52,7 @@ public class MonthlyTransaction extends Transaction {
 
     @Override
     public String toString() {
-        return "MonthlyTransaction [monthYear=" + monthYear + ", date=" + getDate() + ", type=" + getType()
+        return "MonthlyTransaction [monthYear=" + monthYear + ", date=" + getDate() + ", type=" + getType().getDescription()
                 + ", category=" + getCategory() + ", amount=" + getAmount() + "]";
     }
 }

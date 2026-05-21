@@ -3,9 +3,11 @@ package app.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import app.model.enums.TransactionType;
+
 public class Transaction {
     private LocalDate date;
-    private String type;
+    private TransactionType type;
     private String category;
     private BigDecimal amount;
 
@@ -14,7 +16,7 @@ public class Transaction {
 
     public Transaction(LocalDate date, String type, String category, BigDecimal amount) {
         this.date = date;
-        this.type = type;
+        this.type = TransactionType.fromDescription(type);
         this.category = category;
         this.amount = amount;
     }
@@ -27,12 +29,12 @@ public class Transaction {
         this.date = date;
     }
 
-    public String getType() {
+    public TransactionType getType() {
         return type;
     }
 
     public void setType(String type) {
-        this.type = type;
+        this.type = TransactionType.fromDescription(type);
     }
 
     public String getCategory() {
@@ -96,6 +98,6 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction [date=" + date + ", type=" + type + ", category=" + category + ", amount=" + amount + "]";
+        return "Transaction [date=" + date + ", type=" + type.getDescription() + ", category=" + category + ", amount=" + amount + "]";
     }
 }

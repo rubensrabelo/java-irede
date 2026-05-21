@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.model.Transaction;
+import app.model.enums.TransactionType;
 
 public class FinTracker {
     private final List<Transaction> transactions;
@@ -36,9 +37,9 @@ public class FinTracker {
 
         for (Transaction t : this.transactions) {
             if (t.getAmount() != null && t.getType() != null) {
-                if ("REVENUE".equalsIgnoreCase(t.getType())) {
+                if (t.getType() == TransactionType.INCOME) {
                     balance = balance.add(t.getAmount());
-                } else if ("EXPENSE".equalsIgnoreCase(t.getType())) {
+                } else if (t.getType() == TransactionType.OUTCOME) {
                     balance = balance.subtract(t.getAmount());
                 }
             }
