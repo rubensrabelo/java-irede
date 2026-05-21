@@ -1,4 +1,4 @@
-## Scripts para rodar o programa
+## Comandos para Execução
 
 ### Compilar todo o código
 
