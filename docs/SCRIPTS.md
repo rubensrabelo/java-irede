@@ -1,3 +1,5 @@
+## Scripts para rodar o programa
+
 ### Compilar todo o código
 
 ```bash
