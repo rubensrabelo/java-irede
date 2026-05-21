@@ -4,7 +4,7 @@ Execute a sequência de entradas abaixo no console para validar todas as rotas d
 
 ### 1. Inserir uma Receita Mensal
 * Escolha a opção: **`1`** e aperte Enter.
-* Tipo (REVENUE/EXPENSE): **`REVENUE`** e aperte Enter.
+* Tipo: **`Entrada`** e aperte Enter.
 * Categoria: **`Salario`** e aperte Enter.
 * Valor: **`4500.00`** e aperte Enter.
 * Mensal? (S/N): **`S`** e aperte Enter.
@@ -12,7 +12,7 @@ Execute a sequência de entradas abaixo no console para validar todas as rotas d
 
 ### 2. Inserir uma Despesa Comum
 * Escolha a opção: **`1`** e aperte Enter.
-* Tipo (REVENUE/EXPENSE): **`EXPENSE`** e aperte Enter.
+* Tipo: **`Saída`** e aperte Enter.
 * Categoria: **`Mercado`** e aperte Enter.
 * Valor: **`350.00`** e aperte Enter.
 * Mensal? (S/N): **`N`** e aperte Enter.
