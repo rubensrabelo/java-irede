@@ -18,11 +18,11 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import app.factory.ControllerFactory;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
 import app.service.TransactionService;
+import app.utils.Formatter;
 
 public class MainViewController {
 
@@ -36,7 +36,6 @@ public class MainViewController {
 
     private final TransactionService service;
     private ObservableList<Transaction> observableList;
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public MainViewController(TransactionService service) {
         this.service = service;
@@ -52,6 +51,7 @@ public class MainViewController {
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
         setupDateColumnFormatting();
+        setupAmountColumnFormatting();
         setupTypeColumnTranslation();
         setupActionButtons();
         
@@ -62,7 +62,7 @@ public class MainViewController {
     public void updateUI() {
         observableList.setAll(service.findAll());
         BigDecimal balance = service.calculateTotalBalance();
-        lblBalance.setText("Saldo: R$ " + balance);
+        lblBalance.setText(Formatter.formatCurrency(balance));
     }
 
     private void setupDateColumnFormatting() {
@@ -73,7 +73,21 @@ public class MainViewController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(dateFormatter.format(item));
+                    setText(Formatter.formatDate(item));
+                }
+            }
+        });
+    }
+
+    private void setupAmountColumnFormatting() {
+        colAmount.setCellFactory(column -> new TableCell<Transaction, BigDecimal>() {
+            @Override
+            protected void updateItem(BigDecimal item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(Formatter.formatCurrency(item));
                 }
             }
         });

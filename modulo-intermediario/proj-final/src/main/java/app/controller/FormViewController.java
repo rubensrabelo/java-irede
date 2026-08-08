@@ -39,7 +39,7 @@ public class FormViewController {
         if (transactionToEdit != null) {
             cmbType.setValue(transactionToEdit.getType().getDescription());
             txtCategory.setText(transactionToEdit.getCategory());
-            txtAmount.setText(transactionToEdit.getAmount().toString());
+            txtAmount.setText(transactionToEdit.getAmount().toString().replace(".", ","));
             txtDate.setValue(transactionToEdit.getDate());
         }
     }
@@ -57,7 +57,8 @@ public class FormViewController {
                 return;
             }
 
-            BigDecimal amount = new BigDecimal(amountStr);
+            String normalizedAmount = amountStr.replace(",", ".");
+            BigDecimal amount = new BigDecimal(normalizedAmount);
 
             if (editingTransaction != null) {
                 editingTransaction.setDate(date);
