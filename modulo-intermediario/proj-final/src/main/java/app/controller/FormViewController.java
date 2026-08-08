@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import app.model.Transaction;
+import app.service.TransactionService;
 
 public class FormViewController {
 
@@ -18,17 +19,17 @@ public class FormViewController {
     @FXML private DatePicker txtDate;
 
     private MainViewController mainController;
-    private FinTracker finTracker;
+    private TransactionService service;
 
     @FXML
     public void initialize() {
         cmbType.setItems(FXCollections.observableArrayList("Entrada", "Saída"));
-        txtDate.setValue(LocalDate.now()); // Deixa a data atual pré-selecionada
+        txtDate.setValue(LocalDate.now());
     }
 
-    public void setMainController(MainViewController mainController, FinTracker finTracker) {
+    public void setMainController(MainViewController mainController, TransactionService service) {
         this.mainController = mainController;
-        this.finTracker = finTracker;
+        this.service = service;
     }
 
     @FXML
@@ -40,24 +41,19 @@ public class FormViewController {
             LocalDate date = txtDate.getValue();
 
             if (type == null || category.isEmpty() || amountStr.isEmpty() || date == null) {
-                System.out.println("Erro: Preencha todos os campos da interface gráfica.");
+                System.out.println("Erro: Preencha todos os campos.");
                 return;
             }
 
             BigDecimal amount = new BigDecimal(amountStr);
-            
-            // Cria a transação usando os dados que você digitou na tela
             Transaction transaction = new Transaction(date, type, category, amount);
             
-            // Grava o registro através do FinTracker
-            finTracker.addTransaction(transaction);
+            service.save(transaction);
             
-            // Força a tela de trás (Main) a recarregar a tabela e recalcular o saldo imediatamente
             mainController.updateUI();
-            
             closeStage();
         } catch (NumberFormatException e) {
-            System.out.println("Erro: Digite um valor numérico válido.");
+            System.out.println("Erro: Valor numérico inválido.");
         }
     }
 

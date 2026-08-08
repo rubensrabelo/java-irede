@@ -27,14 +27,13 @@ public class MainViewController {
     @FXML private TableColumn<Transaction, String> colType;
     @FXML private TableColumn<Transaction, BigDecimal> colAmount;
 
-    private FinTracker finTracker;
+    private TransactionService service;
     private ObservableList<Transaction> observableList;
 
     @FXML
     public void initialize() {
-        // Inicializa as dependências usando a inversão via construtor
-        this.finTracker = new FinTracker(new TransactionService(new DataRepository<>()));
-        this.observableList = FXCollections.observableArrayList(finTracker.listTransactions());
+        this.service = new TransactionService(new DataRepository<>());
+        this.observableList = FXCollections.observableArrayList(service.findAll());
 
         colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
@@ -46,11 +45,8 @@ public class MainViewController {
     }
 
     public void updateUI() {
-        // Atualiza a tabela com os dados atualizados do controlador
-        observableList.setAll(finTracker.listTransactions());
-        
-        // Atualiza o saldo visual na tela principal
-        BigDecimal balance = finTracker.displayTotalBalance();
+        observableList.setAll(service.findAll());
+        BigDecimal balance = service.calculateTotalBalance();
         lblBalance.setText("Saldo: R$ " + balance);
     }
 
@@ -60,17 +56,13 @@ public class MainViewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
             Parent root = loader.load();
             
-            // Passa a referência deste controlador para a segunda tela conseguir atualizar a tabela
             FormViewController formController = loader.getController();
-            formController.setMainController(this, finTracker);
+            formController.setMainController(this, service);
 
             Stage stage = new Stage();
             stage.setTitle("Nova Transação");
-            
-            // CORREÇÃO: Define o tamanho ideal diretamente na Scene para ela abrir grande (Largura: 500, Altura: 400)
             stage.setScene(new Scene(root, 500, 400));
             stage.setResizable(false);
-            
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
             
@@ -84,9 +76,7 @@ public class MainViewController {
     private void handleDeleteTransaction() {
         Transaction selected = tblTransactions.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            // Como em memória usamos o ID simulado sequencial, precisamos buscar o índice ou mapear
-            // Para simplificar a remoção na lista em memória usando a linha selecionada da tabela:
-            finTracker.listTransactions().remove(selected); 
+            service.findAll().remove(selected); 
             updateUI();
         }
     }
