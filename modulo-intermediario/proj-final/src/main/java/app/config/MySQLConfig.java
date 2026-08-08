@@ -20,7 +20,9 @@ public class MySQLConfig {
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            conn.setAutoCommit(false);
+            return conn;
         } catch (ClassNotFoundException e) {
             throw new SQLException("Driver JDBC do MySQL não encontrado.", e);
         }

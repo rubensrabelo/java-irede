@@ -26,32 +26,36 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
 
         String sql = "INSERT INTO transactions (transaction_kind, transaction_date, transaction_type, category, amount, month_year) VALUES (?, ?, ?, ?, ?, ?)";
         
-        try (Connection conn = MySQLConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            if (entity instanceof MonthlyTransaction) {
-                stmt.setString(1, "MonthlyTransaction");
-                MonthlyTransaction mt = (MonthlyTransaction) entity;
-                stmt.setString(6, mt.getMonthYear() != null ? mt.getMonthYear().toString() : null);
-            } else {
-                stmt.setString(1, "Transaction");
-                stmt.setNull(6, java.sql.Types.VARCHAR);
-            }
-
-            stmt.setDate(2, Date.valueOf(entity.getDate()));
-            stmt.setString(3, entity.getType().name());
-            stmt.setString(4, entity.getCategory());
-            stmt.setBigDecimal(5, entity.getAmount());
-
-            stmt.executeUpdate();
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    entity.setId(generatedKeys.getLong(1));
+        try (Connection conn = MySQLConfig.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                
+                if (entity instanceof MonthlyTransaction) {
+                    stmt.setString(1, "MonthlyTransaction");
+                    MonthlyTransaction mt = (MonthlyTransaction) entity;
+                    stmt.setString(6, mt.getMonthYear() != null ? mt.getMonthYear().toString() : null);
+                } else {
+                    stmt.setString(1, "Transaction");
+                    stmt.setNull(6, java.sql.Types.VARCHAR);
                 }
-            }
-            return entity;
 
+                stmt.setDate(2, Date.valueOf(entity.getDate()));
+                stmt.setString(3, entity.getType().name());
+                stmt.setString(4, entity.getCategory());
+                stmt.setBigDecimal(5, entity.getAmount());
+
+                stmt.executeUpdate();
+
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        entity.setId(generatedKeys.getLong(1));
+                    }
+                }
+                conn.commit();
+                return entity;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar transação no banco de dados.", e);
         }
@@ -65,25 +69,30 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
 
         String sql = "UPDATE transactions SET transaction_kind = ?, transaction_date = ?, transaction_type = ?, category = ?, amount = ?, month_year = ? WHERE id = ?";
         
-        try (Connection conn = MySQLConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            if (entity instanceof MonthlyTransaction) {
-                stmt.setString(1, "MonthlyTransaction");
-                MonthlyTransaction mt = (MonthlyTransaction) entity;
-                stmt.setString(6, mt.getMonthYear() != null ? mt.getMonthYear().toString() : null);
-            } else {
-                stmt.setString(1, "Transaction");
-                stmt.setNull(6, java.sql.Types.VARCHAR);
+        try (Connection conn = MySQLConfig.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                if (entity instanceof MonthlyTransaction) {
+                    stmt.setString(1, "MonthlyTransaction");
+                    MonthlyTransaction mt = (MonthlyTransaction) entity;
+                    stmt.setString(6, mt.getMonthYear() != null ? mt.getMonthYear().toString() : null);
+                } else {
+                    stmt.setString(1, "Transaction");
+                    stmt.setNull(6, java.sql.Types.VARCHAR);
+                }
+
+                stmt.setDate(2, Date.valueOf(entity.getDate()));
+                stmt.setString(3, entity.getType().name());
+                stmt.setString(4, entity.getCategory());
+                stmt.setBigDecimal(5, entity.getAmount());
+                stmt.setLong(7, entity.getId());
+
+                stmt.executeUpdate();
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
             }
-
-            stmt.setDate(2, Date.valueOf(entity.getDate()));
-            stmt.setString(3, entity.getType().name());
-            stmt.setString(4, entity.getCategory());
-            stmt.setBigDecimal(5, entity.getAmount());
-            stmt.setLong(7, entity.getId());
-
-            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar transação no banco de dados.", e);
         }
@@ -158,13 +167,17 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
     @Override
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM transactions WHERE id = ?";
-        try (Connection conn = MySQLConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setLong(1, id);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
+        try (Connection conn = MySQLConfig.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setLong(1, id);
+                int rowsAffected = stmt.executeUpdate();
+                conn.commit();
+                return rowsAffected > 0;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao remover transação do banco de dados.", e);
         }
@@ -172,10 +185,21 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
 
     @Override
     public void saveAll(List<? extends Transaction> entities) {
-        if (entities != null) {
-            for (Transaction entity : entities) {
-                this.save(entity);
+        if (entities == null || entities.isEmpty()) {
+            return;
+        }
+        try (Connection conn = MySQLConfig.getConnection()) {
+            try {
+                for (Transaction entity : entities) {
+                    this.save(entity);
+                }
+                conn.commit();
+            } catch (Exception e) {
+                conn.rollback();
+                throw e;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao salvar lote de transações no banco de dados.", e);
         }
     }
 
