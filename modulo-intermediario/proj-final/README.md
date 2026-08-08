@@ -1,147 +1,35 @@
 # Projeto: FinTrack
 
-## Descrição do Projeto (Versão Inicial)
-O FinTrack é um sistema de controle de ﬁnanças pessoais via console, permitindo ao usuário:
+## Descricao do Projeto (Modulo Intermediario)
+O FinTrack e um sistema de gestao de financas pessoais estruturado com Java 21, interface grafica JavaFX, persistencia relacional MySQL via Docker e arquitetura robusta baseada em padroes de projeto corporativos.
 
-* Cadastrar entradas (receitas) e saídas (despesas)
-* Listar todas as transações
-* Exibir saldo atual
-* Remover uma transação
+O sistema permite ao usuario:
+* Cadastrar e editar transacoes (Entradas e Saidas) com suporte a decimais nacionais (virgula).
+* Listar movimentacoes de forma reativa em tabelas com formatacao brasileira de data e moeda (R$).
+* Exibir balanco de saldo total sincronizado em tempo real.
+* Remover registros de forma fisica utilizando chaves primarias diretas do banco de dados.
 
-O projeto será feito com Java puro, com foco na prática de POO e estruturas básicas, e poderá ser expandido futuramente com relatórios gráﬁcos, persistência em banco de dados e integração com APIs.
+---
 
-## Diagrama de Classes
+## O que eu fiz de diferente do projeto anterior
 
-```mermaid
-classDiagram
+Esta versao representa uma reformulacao estrutural completa em relacao ao projeto console inicial, introduzindo praticas modernas de engenharia de software:
 
-class Transaction {
-    - LocalDate date
-    - TransactionType type
-    - String category
-    - BigDecimal amount
+* **Gerenciamento de Dependencias com Maven:** Migracao do gerenciamento manual de bibliotecas para o Apache Maven, centralizando dependencias modulares e plugins do compilador.
+* **Interface Grafica Reativa com JavaFX:** Substituicao completa do fluxo de terminal via console por uma interface visual dinamica (FXML e CSS) com tabelas reativas e caixas de dialogo controladas.
+* **Persistencia Relacional com MySQL no Docker:** Saida definitiva do armazenamento volatil em memoria RAM para adocao de persistencia robusta em banco de dados MySQL 26.7 rodando em container orquestrado.
+* **Abstracao Dupla com DAO e Repository:** Separacao explicita de responsabilidades onde o `TransactionDAO` manipula scripts SQL puros e o `TransactionDbRepository` gerencia colecoes logicas com Generics.
+* **Inversao de Dependencia e Factory Pattern:** Extincao do acoplamento forte provocado pelo operador `new` dentro de controladores, centralizando o ciclo de vida dos objetos no `ControllerFactory`.
+* **Seguranca Transacional Manual (ACID):** Implementacao de blocos de controle de transacao explicitos (`commit` e `rollback`) com desativacao de `autoCommit` no JDBC para proteger a integridade dos dados.
+* **Hierarquia de Excecoes Personalizadas:** Criacao de erros especificos para evitar vazamento de metadados e credenciais de infraestrutura para as telas do usuario.
+* **Suite de Testes JUnit 5 Dupla:** Estruturacao de testes unitarios puros para regras de negocio e testes de integracao relacional utilizando banco de dados SQLite em memoria.
 
-    + Transaction()
-    + Transaction(LocalDate date, String type, String category, BigDecimal amount)
+---
 
-    + LocalDate getDate()
-    + void setDate(LocalDate date)
+## Links de Documentacao
 
-    + TransactionType getType()
-    + void setType(String type)
-
-    + String getCategory()
-    + void setCategory(String category)
-
-    + BigDecimal getAmount()
-    + void setAmount(BigDecimal amount)
-
-    + int hashCode()
-    + boolean equals(Object obj)
-
-    + String toString()
-}
-
-class MonthlyTransaction {
-    - YearMonth monthYear
-
-    + MonthlyTransaction()
-
-    + MonthlyTransaction(
-        LocalDate date,
-        String type,
-        String category,
-        BigDecimal amount,
-        YearMonth monthYear
-      )
-
-    + YearMonth getMonthYear()
-    + void setMonthYear(YearMonth monthYear)
-
-    + int hashCode()
-    + boolean equals(Object obj)
-
-    + String toString()
-}
-
-class FinTracker {
-    - ArrayList~Transaction~ transactions
-
-    + void addTransaction(Transaction transaction)
-    + void listTransactions()
-    + void removeTransaction(int index)
-    + BigDecimal calculateTotalBalance()
-}
-
-class InvalidInputException {
-    + InvalidInputException(String message)
-}
-
-class FormatterUtil {
-    + String formatCurrency(BigDecimal amount)
-    + String formatDate(LocalDate date)
-}
-
-class Main {
-    + main(String[] args)
-}
-
-class TransactionType {
-    <<enumeration>>
-
-    INCOME
-    EXPENSE
-
-    + String getDescription()
-    + TransactionType fromDescription(String description)
-}
-
-MonthlyTransaction --|> Transaction
-FinTracker --> Transaction : manages
-Transaction --> TransactionType : uses
-Main --> FinTracker : starts
-FinTracker ..> InvalidInputException : throws
-FinTracker ..> FormatterUtil : uses
-```
-
-## Organização dos Arquivos
-
-O projeto possui a seguinte estrutura de diretórios e arquivos:
-
-```bash
-├── app
-│   ├── controller
-│   │   ├── FinTracker.class
-│   │   └── FinTracker.java
-│   ├── exceptions
-│   │   ├── InvalidInputException.class
-│   │   └── InvalidInputException.java
-│   ├── Main.class
-│   ├── Main.java
-│   ├── model
-│   │   ├── MonthlyTransaction.class
-│   │   ├── MonthlyTransaction.java
-│   │   ├── Transaction.class
-│   │   └── Transaction.java
-│   └── utils
-│       ├── Formatter.class
-│       └── Formatter.java
-├── docs
-│   ├── SCRIPTS.md
-│   └── TEST_SCRIPT.md
-└── README.md
-```
-
-## O que eu fiz de diferente?
-
-- Add um repository patterns
-- add generics para o repositório
-- Add o maven para o JavaFX
-
-## Comandos para Execução
-
-[Link para os comandos de execução](./docs/SCRIPTS.md)
-
-## Roteiro Prático de Teste
-
-[Link para os testes](./docs/TEST_SCRIPT.md)
+* [Modelagem de Dados do Banco de Dados](./docs/DATA_MODEL.md)
+* [Arquitetura do Sistema (C4 Component Model)](./docs/ARCHITECTURE.md)
+* [Padroes de Projeto Utilizados (DI e Factory)](./docs/PATTERNS.md)
+* [Estrutura de Diretorios e Pastas](./docs/STRUCTURE.md)
+* [Manual de Configuracao (.env) e Execucao](./docs/SCRIPTS.md)
