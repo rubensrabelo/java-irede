@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.MainViewController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
+            <children>
+                <Label style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" text="FinTrack - Controle Financeiro" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblBalance" style="-fx-text-fill: #2ecc71; -fx-font-size: 16px; -fx-font-weight: bold;" text="Saldo: R$ 0,00" />
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+            <children>
+                <TableView fx:id="tblTransactions" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colDate" prefWidth="120" text="Data" />
+                        <TableColumn fx:id="colCategory" prefWidth="200" text="Categoria" />
+                        <TableColumn fx:id="colType" prefWidth="150" text="Tipo" />
+                        <TableColumn fx:id="colAmount" prefWidth="150" text="Valor" />
+                    </columns>
+                </TableView>
+                <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <children>
+                        <Button onAction="#handleNewTransaction" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Nova Transação" />
+                        <Button onAction="#handleDeleteTransaction" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Remover Selecionada" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
