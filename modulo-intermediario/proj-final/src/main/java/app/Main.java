@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import app.factory.ControllerFactory;
+import app.exceptions.InitializationException;
 
 public class Main extends Application {
 
@@ -20,8 +21,8 @@ public class Main extends Application {
             primaryStage.setScene(new Scene(root, 750, 500));
             primaryStage.show();
         } catch (Exception e) {
-            System.out.println("Erro crítico ao carregar a interface gráfica:");
-            e.printStackTrace();
+            System.err.println("[LOG CRÍTICO BOOTSTRAP]: " + e.getMessage());
+            throw new InitializationException("Falha catastrófica ao inicializar o carregamento da janela principal da aplicação.", e);
         }
     }
 

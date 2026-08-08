@@ -5,6 +5,7 @@ import app.controller.MainViewController;
 import app.controller.FormViewController;
 import app.repository.TransactionDbRepository;
 import app.service.TransactionService;
+import app.exceptions.FactoryInstantiationException;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
 
@@ -29,7 +30,8 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
         try {
             return param.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao instanciar controlador na Factory", e);
+            System.err.println("[LOG CRÍTICO FACTORY]: " + e.getMessage());
+            throw new FactoryInstantiationException("Erro ao instanciar dinamicamente o controlador: " + param.getName(), e);
         }
     }
 }

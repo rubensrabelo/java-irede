@@ -11,4 +11,5 @@ module app {
     
     exports app;
     exports app.factory;
+    exports app.exceptions;
 }

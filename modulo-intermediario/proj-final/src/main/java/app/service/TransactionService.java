@@ -3,6 +3,7 @@ package app.service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import app.exceptions.InvalidInputException;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
 import app.repository.GenericRepository;
@@ -16,14 +17,14 @@ public class TransactionService {
 
     public Transaction save(Transaction transaction) {
         if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
+            throw new InvalidInputException("O valor da transação deve ser maior que zero.");
         }
         return repository.save(transaction);
     }
 
     public void update(Transaction transaction) {
         if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
+            throw new InvalidInputException("O valor da transação deve ser maior que zero.");
         }
         repository.update(transaction);
     }

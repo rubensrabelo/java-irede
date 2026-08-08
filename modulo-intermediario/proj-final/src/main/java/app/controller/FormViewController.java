@@ -2,12 +2,16 @@ package app.controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import app.exceptions.InvalidInputException;
+import app.exceptions.TransactionPersistenceException;
 import app.model.Transaction;
 import app.service.TransactionService;
 
@@ -52,20 +56,23 @@ public class FormViewController {
             String amountStr = txtAmount.getText();
             LocalDate date = txtDate.getValue();
 
-            if (type == null || category.isEmpty() || amountStr.isEmpty() || date == null) {
-                System.out.println("Erro: Preencha todos os campos.");
-                return;
+            if (type == null || category.trim().isEmpty() || amountStr.trim().isEmpty() || date == null) {
+                throw new InvalidInputException("Todos os campos do formulário são de preenchimento obrigatório.");
             }
 
             String normalizedAmount = amountStr.replace(",", ".");
-            BigDecimal amount = new BigDecimal(normalizedAmount);
+            BigDecimal amount;
+            try {
+                amount = new BigDecimal(normalizedAmount);
+            } catch (NumberFormatException e) {
+                throw new InvalidInputException("O valor numérico digitado é inválido. Utilize apenas números e vírgula.");
+            }
 
             if (editingTransaction != null) {
                 editingTransaction.setDate(date);
                 editingTransaction.setCategory(category);
                 editingTransaction.setAmount(amount);
                 editingTransaction.setType(type);
-                
                 service.update(editingTransaction);
             } else {
                 Transaction transaction = new Transaction(date, type, category, amount);
@@ -74,8 +81,14 @@ public class FormViewController {
             
             mainController.updateUI();
             closeStage();
-        } catch (NumberFormatException e) {
-            System.out.println("Erro: Valor numérico inválido.");
+            
+        } catch (InvalidInputException e) {
+            showValidationError(e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[LOG CRÍTICO REPOSITÓRIO]: " + e.getMessage());
+            e.printStackTrace();
+            showDatabaseErrorAlert("Não foi possível salvar o registro devido a uma instabilidade na comunicação com o servidor de dados.");
+            throw new TransactionPersistenceException("Falha de persistência ao tentar salvar o registro da transação.", e);
         }
     }
 
@@ -87,5 +100,21 @@ public class FormViewController {
     private void closeStage() {
         Stage stage = (Stage) txtCategory.getScene().getWindow();
         stage.close();
+    }
+
+    private void showValidationError(String message) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Aviso de Validação");
+        alert.setHeaderText("Verifique os campos digitados");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showDatabaseErrorAlert(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Erro de Armazenamento");
+        alert.setHeaderText("Falha na gravação dos dados");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

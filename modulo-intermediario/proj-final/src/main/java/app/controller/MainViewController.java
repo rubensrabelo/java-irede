@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -23,6 +25,8 @@ import app.model.Transaction;
 import app.model.enums.TransactionType;
 import app.service.TransactionService;
 import app.utils.Formatter;
+import app.exceptions.TransactionPersistenceException;
+import app.exceptions.VisualRenderingException;
 
 public class MainViewController {
 
@@ -43,26 +47,40 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        this.observableList = FXCollections.observableArrayList(service.findAll());
+        try {
+            this.observableList = FXCollections.observableArrayList(service.findAll());
 
-        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-        colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+            colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+            colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+            colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+            colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-        setupDateColumnFormatting();
-        setupAmountColumnFormatting();
-        setupTypeColumnTranslation();
-        setupActionButtons();
-        
-        tblTransactions.setItems(observableList);
-        updateUI();
+            setupDateColumnFormatting();
+            setupAmountColumnFormatting();
+            setupTypeColumnTranslation();
+            setupActionButtons();
+            
+            tblTransactions.setItems(observableList);
+            updateUI();
+        } catch (Exception e) {
+            System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
+            e.printStackTrace();
+            showDatabaseErrorAlert("Não foi possível carregar as informações devido a uma falha na conexão com o banco de dados.");
+            throw new TransactionPersistenceException("Falha crítica ao carregar listagem inicial de dados no repositório.", e);
+        }
     }
 
     public void updateUI() {
-        observableList.setAll(service.findAll());
-        BigDecimal balance = service.calculateTotalBalance();
-        lblBalance.setText(Formatter.formatCurrency(balance));
+        try {
+            observableList.setAll(service.findAll());
+            BigDecimal balance = service.calculateTotalBalance();
+            lblBalance.setText(Formatter.formatCurrency(balance));
+        } catch (Exception e) {
+            System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
+            e.printStackTrace();
+            showDatabaseErrorAlert("Não foi possível atualizar o saldo devido a uma falha na sincronização com o servidor de dados.");
+            throw new TransactionPersistenceException("Falha crítica ao atualizar sincronização de dados e balanço de saldos.", e);
+        }
     }
 
     private void setupDateColumnFormatting() {
@@ -135,10 +153,17 @@ public class MainViewController {
                         });
 
                         btnDelete.setOnAction(event -> {
-                            Transaction transaction = getTableView().getItems().get(getIndex());
-                            if (transaction != null && transaction.getId() != null) {
-                                service.deleteById(transaction.getId());
-                                updateUI();
+                            try {
+                                Transaction transaction = getTableView().getItems().get(getIndex());
+                                if (transaction != null && transaction.getId() != null) {
+                                    service.deleteById(transaction.getId());
+                                    updateUI();
+                                }
+                            } catch (Exception e) {
+                                System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
+                                e.printStackTrace();
+                                showDatabaseErrorAlert("Não foi possível excluir o item selecionado devido a uma instabilidade com o banco de dados.");
+                                throw new TransactionPersistenceException("Falha crítica ao executar deleção física por id.", e);
                             }
                         });
                     }
@@ -166,7 +191,6 @@ public class MainViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
             loader.setControllerFactory(new ControllerFactory(this.service));
-            
             Parent root = loader.load();
             
             FormViewController formController = loader.getController();
@@ -178,10 +202,27 @@ public class MainViewController {
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-            
         } catch (Exception e) {
-            System.out.println("Erro ao abrir a tela de formulário:");
+            System.err.println("[LOG CRÍTICO INTERFACE]: " + e.getMessage());
             e.printStackTrace();
+            showInterfaceErrorAlert("Não foi possível inicializar os componentes gráficos da janela solicitada.");
+            throw new VisualRenderingException("Falha crítica de carregamento estrutural do arquivo FXML de formulário.", e);
         }
+    }
+
+    private void showDatabaseErrorAlert(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Erro de Comunicação");
+        alert.setHeaderText("Instabilidade no Servidor");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showInterfaceErrorAlert(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Erro de Renderização");
+        alert.setHeaderText("Falha ao abrir janela");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

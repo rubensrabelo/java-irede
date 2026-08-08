@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import app.config.MySQLConfig;
+import app.exceptions.DatabaseException;
+import app.exceptions.EntityNotFoundException;
 import app.model.MonthlyTransaction;
 import app.model.Transaction;
 
@@ -57,7 +59,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 throw e;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao salvar transação no banco de dados.", e);
+            throw new DatabaseException("Erro ao salvar transação no banco de dados.", e);
         }
     }
 
@@ -87,14 +89,17 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 stmt.setBigDecimal(5, entity.getAmount());
                 stmt.setLong(7, entity.getId());
 
-                stmt.executeUpdate();
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new EntityNotFoundException("Transação com ID " + entity.getId() + " não foi encontrada para atualização.");
+                }
                 conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
                 throw e;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar transação no banco de dados.", e);
+            throw new DatabaseException("Erro ao atualizar transação no banco de dados.", e);
         }
     }
 
@@ -127,7 +132,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao listar transações do banco de dados.", e);
+            throw new DatabaseException("Erro ao listar transações do banco de dados.", e);
         }
         return transactions;
     }
@@ -159,7 +164,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar transação por ID.", e);
+            throw new DatabaseException("Erro ao buscar transação por ID.", e);
         }
         return Optional.empty();
     }
@@ -172,14 +177,17 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 
                 stmt.setLong(1, id);
                 int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new EntityNotFoundException("Transação com ID " + id + " não foi encontrada para remoção.");
+                }
                 conn.commit();
-                return rowsAffected > 0;
+                return true;
             } catch (SQLException e) {
                 conn.rollback();
                 throw e;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao remover transação do banco de dados.", e);
+            throw new DatabaseException("Erro ao remover transação do banco de dados.", e);
         }
     }
 
@@ -198,8 +206,8 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 conn.rollback();
                 throw e;
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao salvar lote de transações no banco de dados.", e);
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao salvar lote de transações no banco de dados.", e);
         }
     }
 
