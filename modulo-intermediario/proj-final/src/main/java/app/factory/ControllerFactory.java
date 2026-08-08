@@ -3,6 +3,7 @@ package app.factory;
 import javafx.util.Callback;
 import app.controller.MainViewController;
 import app.controller.FormViewController;
+import app.repository.TransactionDAO;
 import app.repository.TransactionDbRepository;
 import app.service.TransactionService;
 import app.exceptions.FactoryInstantiationException;
@@ -12,7 +13,9 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
     private final TransactionService service;
 
     public ControllerFactory() {
-        this.service = new TransactionService(new TransactionDbRepository());
+        TransactionDAO dao = new TransactionDAO();
+        TransactionDbRepository repository = new TransactionDbRepository(dao);
+        this.service = new TransactionService(repository);
     }
 
     public ControllerFactory(TransactionService service) {
