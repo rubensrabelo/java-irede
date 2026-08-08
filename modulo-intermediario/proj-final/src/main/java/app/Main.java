@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import app.factory.ControllerFactory;
 
 public class Main extends Application {
 
@@ -12,8 +13,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/app/view/main-view.fxml"));
-            Parent root = loader.load();
+            loader.setControllerFactory(new ControllerFactory());
             
+            Parent root = loader.load();
             primaryStage.setTitle("FinTrack - Gestão Financeira");
             primaryStage.setScene(new Scene(root, 750, 500));
             primaryStage.show();

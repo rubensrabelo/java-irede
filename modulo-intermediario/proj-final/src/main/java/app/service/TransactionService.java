@@ -8,9 +8,9 @@ import app.model.enums.TransactionType;
 import app.repository.GenericRepository;
 
 public class TransactionService {
-    private final GenericRepository<Transaction, Integer> repository;
+    private final GenericRepository<Transaction, Long> repository;
 
-    public TransactionService(GenericRepository<Transaction, Integer> repository) {
+    public TransactionService(GenericRepository<Transaction, Long> repository) {
         this.repository = repository;
     }
 
@@ -25,11 +25,11 @@ public class TransactionService {
         return repository.findAll();
     }
 
-    public Optional<Transaction> findById(Integer id) {
+    public Optional<Transaction> findById(Long id) {
         return repository.findById(id);
     }
 
-    public boolean deleteById(Integer id) {
+    public boolean deleteById(Long id) {
         return repository.deleteById(id);
     }
 
@@ -41,5 +41,9 @@ public class TransactionService {
 
     public void saveAll(List<? extends Transaction> transactions) {
         repository.saveAll(transactions);
+    }
+
+    public GenericRepository<Transaction, Long> getOriginalRepository() {
+        return this.repository;
     }
 }

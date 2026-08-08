@@ -19,9 +19,10 @@ import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import app.factory.ControllerFactory;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
-import app.repository.DataRepository;
 import app.service.TransactionService;
 
 public class MainViewController {
@@ -34,13 +35,16 @@ public class MainViewController {
     @FXML private TableColumn<Transaction, BigDecimal> colAmount;
     @FXML private TableColumn<Transaction, Void> colActions;
 
-    private TransactionService service;
+    private final TransactionService service;
     private ObservableList<Transaction> observableList;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    public MainViewController(TransactionService service) {
+        this.service = service;
+    }
+
     @FXML
     public void initialize() {
-        this.service = new TransactionService(new DataRepository<>());
         this.observableList = FXCollections.observableArrayList(service.findAll());
 
         colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
@@ -114,22 +118,16 @@ public class MainViewController {
 
                         btnEdit.setOnAction(event -> {
                             Transaction transaction = getTableView().getItems().get(getIndex());
-                            openFormWindow(transaction);
+                            openFormWindow(transaction, getIndex());
                         });
 
                         btnDelete.setOnAction(event -> {
-                            Transaction transaction = getTableView().getItems().get(getIndex());
-                            Integer idTarget = null;
-                            for (Transaction t : service.findAll()) {
-                                if (t.equals(transaction)) {
-                                    idTarget = service.findAll().indexOf(t) + 1;
-                                    break;
-                                }
-                            }
-                            if (idTarget != null) {
+                            int currentIndex = getIndex();
+                            if (currentIndex >= 0 && currentIndex < getTableView().getItems().size()) {
+                                Long idTarget = (long) (currentIndex + 1);
                                 service.deleteById(idTarget);
+                                updateUI();
                             }
-                            updateUI();
                         });
                     }
 
@@ -149,16 +147,20 @@ public class MainViewController {
 
     @FXML
     private void handleNewTransaction() {
-        openFormWindow(null);
+        openFormWindow(null, -1);
     }
 
-    private void openFormWindow(Transaction transactionToEdit) {
+    private void openFormWindow(Transaction transactionToEdit, int rowIndex) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
+            
+            // Reutiliza a instância existente do serviço para não duplicar o banco de dados
+            loader.setControllerFactory(new ControllerFactory(this.service));
+            
             Parent root = loader.load();
             
             FormViewController formController = loader.getController();
-            formController.setMainController(this, service, transactionToEdit);
+            formController.setMainController(this, transactionToEdit, rowIndex);
 
             Stage stage = new Stage();
             stage.setTitle(transactionToEdit == null ? "Nova Transação" : "Editar Transação");

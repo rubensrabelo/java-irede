@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import app.model.Transaction;
+import app.repository.TransactionDbRepository;
 import app.service.TransactionService;
 
 public class FormViewController {
@@ -19,8 +20,13 @@ public class FormViewController {
     @FXML private DatePicker txtDate;
 
     private MainViewController mainController;
-    private TransactionService service;
+    private final TransactionService service;
     private Transaction editingTransaction;
+    private int selectedRowIndex = -1;
+
+    public FormViewController(TransactionService service) {
+        this.service = service;
+    }
 
     @FXML
     public void initialize() {
@@ -28,10 +34,10 @@ public class FormViewController {
         txtDate.setValue(LocalDate.now());
     }
 
-    public void setMainController(MainViewController mainController, TransactionService service, Transaction transactionToEdit) {
+    public void setMainController(MainViewController mainController, Transaction transactionToEdit, int rowIndex) {
         this.mainController = mainController;
-        this.service = service;
         this.editingTransaction = transactionToEdit;
+        this.selectedRowIndex = rowIndex;
 
         if (transactionToEdit != null) {
             cmbType.setValue(transactionToEdit.getType().getDescription());
@@ -61,6 +67,11 @@ public class FormViewController {
                 editingTransaction.setCategory(category);
                 editingTransaction.setAmount(amount);
                 editingTransaction.setType(type);
+                
+                if (service.getOriginalRepository() instanceof TransactionDbRepository) {
+                    long targetId = (long) (selectedRowIndex + 1);
+                    ((TransactionDbRepository) service.getOriginalRepository()).updateWithExplicitId(editingTransaction, targetId);
+                }
             } else {
                 Transaction transaction = new Transaction(date, type, category, amount);
                 service.save(transaction);
