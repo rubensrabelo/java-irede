@@ -1,0 +1,76 @@
+.root {
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    -fx-background-color: #f8f9fa;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #edf2f7;
+    -fx-size: 35px;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #4a5568;
+}
+
+.type-income {
+    -fx-text-fill: #2ecc71;
+    -fx-font-weight: bold;
+}
+
+.type-outcome {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-radius: 4px;
+    -fx-padding: 8px 16px;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.btn-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+.btn-table-edit {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+}
+
+.btn-table-edit:hover {
+    -fx-background-color: #d35400;
+}
+
+.btn-table-delete {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+}
+
+.btn-table-delete:hover {
+    -fx-background-color: #c0392b;
+}

@@ -6,39 +6,49 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="20" alignment="CENTER" style="-fx-padding: 30; -fx-background-color: #f8f9fa;" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.FormViewController">
+<VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="500.0" spacing="25.0" stylesheets="@css/form-style.css" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.FormViewController">
+    <padding>
+        <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+    </padding>
     <children>
-        <Label text="Cadastrar Nova Transação" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+        <Label style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" text="Cadastrar Nova Transação" />
         
-        <GridPane hgap="15" vgap="15" alignment="CENTER">
+        <GridPane hgap="15.0" vgap="15.0" VBox.vgrow="ALWAYS">
             <columnConstraints>
-                <ColumnConstraints minWidth="80" prefWidth="100" halignment="RIGHT"/>
-                <ColumnConstraints minWidth="200" prefWidth="250" hgrow="ALWAYS"/>
+                <ColumnConstraints halignment="RIGHT" minWidth="90.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="300.0" />
             </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="40.0" prefHeight="40.0" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" />
+                <RowConstraints minHeight="40.0" prefHeight="40.0" />
+            </rowConstraints>
             <children>
-                <Label text="Tipo:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 14px;"/>
-                <ComboBox fx:id="cmbType" prefWidth="250.0" promptText="Selecione..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Tipo:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <ComboBox fx:id="cmbType" maxWidth="1.7976931348623157E308" promptText="Selecione..." GridPane.columnIndex="1" GridPane.rowIndex="0" />
                 
-                <Label text="Categoria:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 14px;"/>
-                <TextField fx:id="txtCategory" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Categoria:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="txtCategory" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 
-                <Label text="Valor:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 14px;"/>
-                <TextField fx:id="txtAmount" prefWidth="250.0" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Valor:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="txtAmount" maxWidth="1.7976931348623157E308" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 
-                <Label text="Data:" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-size: 14px;"/>
-                <DatePicker fx:id="txtDate" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Data:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <DatePicker fx:id="txtDate" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </children>
         </GridPane>
         
-        <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 10 0 0 0;">
+        <HBox alignment="CENTER_RIGHT" spacing="15.0">
             <children>
-                <Button text="Cancelar" onAction="#handleCancel" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15;"/>
-                <Button text="Salvar Registro" onAction="#handleSave" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 8 15;"/>
+                <Button onAction="#handleCancel" styleClass="btn-secondary" text="Cancelar" />
+                <Button onAction="#handleSave" styleClass="btn-success" text="Salvar Registro" />
             </children>
         </HBox>
     </children>

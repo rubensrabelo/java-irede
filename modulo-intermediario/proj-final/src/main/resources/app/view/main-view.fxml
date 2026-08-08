@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.MainViewController">
+<BorderPane prefHeight="500.0" prefWidth="750.0" stylesheets="@css/main-style.css" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.MainViewController">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: #2c3e50; -fx-padding: 15;">
             <children>
@@ -37,7 +37,7 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" spacing="10">
                     <children>
-                        <Button onAction="#handleNewTransaction" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Nova Transação" />
+                        <Button onAction="#handleNewTransaction" styleClass="btn-primary" text="Nova Transação" />
                     </children>
                 </HBox>
             </children>

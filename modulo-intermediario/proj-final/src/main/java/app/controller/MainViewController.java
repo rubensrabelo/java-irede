@@ -19,7 +19,6 @@ import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
 import app.repository.DataRepository;
@@ -84,13 +83,15 @@ public class MainViewController {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    getStyleClass().removeAll("type-income", "type-outcome");
                 } else {
+                    getStyleClass().removeAll("type-income", "type-outcome");
                     if (item == TransactionType.INCOME) {
                         setText("Entrada");
-                        setStyle("-fx-text-fill: #2ecc71; -fx-font-weight: bold;");
+                        getStyleClass().add("type-income");
                     } else if (item == TransactionType.OUTCOME) {
                         setText("Saída");
-                        setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold;");
+                        getStyleClass().add("type-outcome");
                     }
                 }
             }
@@ -102,13 +103,14 @@ public class MainViewController {
             @Override
             public TableCell<Transaction, Void> call(final TableColumn<Transaction, Void> param) {
                 return new TableCell<Transaction, Void>() {
-                    private final Button btnEdit = new Button("Editar");
-                    private final Button btnDelete = new Button("Excluir");
-                    private final HBox pane = new HBox(10, btnEdit, btnDelete);
+                    private final Button btnEdit = new Button("EDITAR");
+                    private final Button btnDelete = new Button("EXCLUIR");
+                    private final HBox pane = new HBox(8, btnEdit, btnDelete);
 
                     {
-                        btnEdit.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand;");
-                        btnDelete.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;");
+                        pane.setAlignment(javafx.geometry.Pos.CENTER);
+                        btnEdit.getStyleClass().add("btn-table-edit");
+                        btnDelete.getStyleClass().add("btn-table-delete");
 
                         btnEdit.setOnAction(event -> {
                             Transaction transaction = getTableView().getItems().get(getIndex());
