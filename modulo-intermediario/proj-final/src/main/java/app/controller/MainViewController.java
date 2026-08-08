@@ -19,6 +19,7 @@ import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
 import app.repository.DataRepository;
@@ -116,7 +117,16 @@ public class MainViewController {
 
                         btnDelete.setOnAction(event -> {
                             Transaction transaction = getTableView().getItems().get(getIndex());
-                            service.findAll().remove(transaction);
+                            Integer idTarget = null;
+                            for (Transaction t : service.findAll()) {
+                                if (t.equals(transaction)) {
+                                    idTarget = service.findAll().indexOf(t) + 1;
+                                    break;
+                                }
+                            }
+                            if (idTarget != null) {
+                                service.deleteById(idTarget);
+                            }
                             updateUI();
                         });
                     }
