@@ -13,4 +13,5 @@ Este repositório armazena os projetos e estudos desenvolvidos durante a capacit
 ## modulo-intermediario/ (Concluído)
 
 * Conteúdo: Generics (Unidade 1), Interface gráfica com JavaFX (Unidade 2), Acesso a banco de dados com JDBC (Unidade 3), Testes de software (Unidade 4) e Desenvolvimento de Projeto (Unidade 5).
-* Status: Desenvolvimento dos conceitos avançados e integração com persistência e interfaces visuais.
+* Projeto Destaque: FinTrack – Evolução do sistema para interface gráfica com JavaFX, persistência em banco de dados MySQL via Docker com padrão DAO/Repository, controle de transações (commit/rollback) e testes unitários e de integração com JUnit 5 utilizando SQLite em memória.
+* Status: Concluído. Integração de conceitos avançados, banco de dados, interfaces visuais e testes automatizados.
