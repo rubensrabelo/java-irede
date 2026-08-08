@@ -2,7 +2,8 @@ package app.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+
+import app.exceptions.EntityNotFoundException;
 import app.exceptions.InvalidInputException;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
@@ -33,8 +34,9 @@ public class TransactionService {
         return repository.findAll();
     }
 
-    public Optional<Transaction> findById(Long id) {
-        return repository.findById(id);
+    public Transaction findById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("A entidade com o id = " + id + " não foi encontrada"));
     }
 
     public boolean deleteById(Long id) {
