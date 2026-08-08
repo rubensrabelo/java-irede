@@ -11,11 +11,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/main-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/app/view/main-view.fxml"));
             Parent root = loader.load();
             
             primaryStage.setTitle("FinTrack - Gestão Financeira");
-            primaryStage.setScene(new Scene(root));
+            primaryStage.setScene(new Scene(root, 750, 500));
             primaryStage.show();
         } catch (Exception e) {
             System.out.println("Erro crítico ao carregar a interface gráfica:");
@@ -24,7 +24,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        // Ignora problemas causados por drivers de vídeo nativos no ambiente Linux
         System.setProperty("prism.order", "sw");
         launch(args);
     }
