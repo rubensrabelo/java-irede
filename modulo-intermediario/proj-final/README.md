@@ -31,5 +31,7 @@ Esta versao representa uma reformulacao estrutural completa em relacao ao projet
 * [Modelagem de Dados do Banco de Dados](./docs/DATA_MODEL.md)
 * [Arquitetura do Sistema (C4 Component Model)](./docs/ARCHITECTURE.md)
 * [Padroes de Projeto Utilizados (DI e Factory)](./docs/PATTERNS.md)
+* [Interface Grafica e Descricao das Telas](./docs/SCREENS.md)
 * [Estrutura de Diretorios e Pastas](./docs/STRUCTURE.md)
 * [Manual de Configuracao (.env) e Execucao](./docs/SCRIPTS.md)
+
