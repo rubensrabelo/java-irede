@@ -10,7 +10,7 @@ Este repositório armazena os projetos e estudos desenvolvidos durante a capacit
 * Projeto Destaque: FinTrack – Sistema de finanças em console utilizando Java puro, BigDecimal, Enums e arquitetura em pacotes (model, controller, app, exceptions, utils).
 * Nota do Projeto: 10 / 10 (Aprovado com destaque em aplicação de POO, herança e organização).
 
-## modulo-intermediario/ (Em progresso)
+## modulo-intermediario/ (Concluído)
 
 * Conteúdo: Generics (Unidade 1), Interface gráfica com JavaFX (Unidade 2), Acesso a banco de dados com JDBC (Unidade 3), Testes de software (Unidade 4) e Desenvolvimento de Projeto (Unidade 5).
 * Status: Desenvolvimento dos conceitos avançados e integração com persistência e interfaces visuais.
