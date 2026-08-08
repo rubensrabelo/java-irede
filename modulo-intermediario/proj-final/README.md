@@ -132,6 +132,12 @@ O projeto possui a seguinte estrutura de diretórios e arquivos:
 └── README.md
 ```
 
+## O que eu fiz de diferente?
+
+- Add um repository patterns
+- add generics para o repositório
+- Add o maven para o JavaFX
+
 ## Comandos para Execução
 
 [Link para os comandos de execução](./docs/SCRIPTS.md)
