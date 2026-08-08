@@ -27,7 +27,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
         String sql = "INSERT INTO transactions (transaction_kind, transaction_date, transaction_type, category, amount, month_year) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = MySQLConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             if (entity instanceof MonthlyTransaction) {
                 stmt.setString(1, "MonthlyTransaction");
@@ -44,6 +44,12 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
             stmt.setBigDecimal(5, entity.getAmount());
 
             stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    entity.setId(generatedKeys.getLong(1));
+                }
+            }
             return entity;
 
         } catch (SQLException e) {
@@ -51,8 +57,14 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
         }
     }
 
-    public void updateWithExplicitId(Transaction entity, long id) {
+    @Override
+    public void update(Transaction entity) {
+        if (entity == null || entity.getId() == null) {
+            throw new IllegalArgumentException("A entidade ou o ID não podem ser nulos para atualização.");
+        }
+
         String sql = "UPDATE transactions SET transaction_kind = ?, transaction_date = ?, transaction_type = ?, category = ?, amount = ?, month_year = ? WHERE id = ?";
+        
         try (Connection conn = MySQLConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
@@ -69,7 +81,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
             stmt.setString(3, entity.getType().name());
             stmt.setString(4, entity.getCategory());
             stmt.setBigDecimal(5, entity.getAmount());
-            stmt.setLong(7, id);
+            stmt.setLong(7, entity.getId());
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -87,6 +99,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
+                Long id = rs.getLong("id");
                 String kind = rs.getString("transaction_kind");
                 LocalDate date = rs.getDate("transaction_date").toLocalDate();
                 String typeStr = rs.getString("transaction_type");
@@ -98,9 +111,9 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 if ("MonthlyTransaction".equals(kind)) {
                     String myStr = rs.getString("month_year");
                     YearMonth monthYear = myStr != null ? YearMonth.parse(myStr) : YearMonth.now();
-                    transactions.add(new MonthlyTransaction(date, mappedType, category, amount, monthYear));
+                    transactions.add(new MonthlyTransaction(id, date, mappedType, category, amount, monthYear));
                 } else {
-                    transactions.add(new Transaction(date, mappedType, category, amount));
+                    transactions.add(new Transaction(id, date, mappedType, category, amount));
                 }
             }
 
@@ -130,9 +143,9 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                     if ("MonthlyTransaction".equals(kind)) {
                         String myStr = rs.getString("month_year");
                         YearMonth monthYear = myStr != null ? YearMonth.parse(myStr) : YearMonth.now();
-                        return Optional.of(new MonthlyTransaction(date, mappedType, category, amount, monthYear));
+                        return Optional.of(new MonthlyTransaction(id, date, mappedType, category, amount, monthYear));
                     } else {
-                        return Optional.of(new Transaction(date, mappedType, category, amount));
+                        return Optional.of(new Transaction(id, date, mappedType, category, amount));
                     }
                 }
             }

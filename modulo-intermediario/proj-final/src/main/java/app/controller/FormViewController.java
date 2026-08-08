@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import app.model.Transaction;
-import app.repository.TransactionDbRepository;
 import app.service.TransactionService;
 
 public class FormViewController {
@@ -22,7 +21,6 @@ public class FormViewController {
     private MainViewController mainController;
     private final TransactionService service;
     private Transaction editingTransaction;
-    private int selectedRowIndex = -1;
 
     public FormViewController(TransactionService service) {
         this.service = service;
@@ -34,10 +32,9 @@ public class FormViewController {
         txtDate.setValue(LocalDate.now());
     }
 
-    public void setMainController(MainViewController mainController, Transaction transactionToEdit, int rowIndex) {
+    public void setMainController(MainViewController mainController, Transaction transactionToEdit) {
         this.mainController = mainController;
         this.editingTransaction = transactionToEdit;
-        this.selectedRowIndex = rowIndex;
 
         if (transactionToEdit != null) {
             cmbType.setValue(transactionToEdit.getType().getDescription());
@@ -68,10 +65,7 @@ public class FormViewController {
                 editingTransaction.setAmount(amount);
                 editingTransaction.setType(type);
                 
-                if (service.getOriginalRepository() instanceof TransactionDbRepository) {
-                    long targetId = (long) (selectedRowIndex + 1);
-                    ((TransactionDbRepository) service.getOriginalRepository()).updateWithExplicitId(editingTransaction, targetId);
-                }
+                service.update(editingTransaction);
             } else {
                 Transaction transaction = new Transaction(date, type, category, amount);
                 service.save(transaction);

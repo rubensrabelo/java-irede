@@ -2,10 +2,10 @@ package app.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 import app.model.enums.TransactionType;
 
 public class Transaction {
+    private Long id;
     private LocalDate date;
     private TransactionType type;
     private String category;
@@ -19,6 +19,22 @@ public class Transaction {
         this.type = TransactionType.fromDescription(type);
         this.category = category;
         this.amount = amount;
+    }
+
+    public Transaction(Long id, LocalDate date, String type, String category, BigDecimal amount) {
+        this.id = id;
+        this.date = date;
+        this.type = TransactionType.fromDescription(type);
+        this.category = category;
+        this.amount = amount;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDate getDate() {
@@ -57,10 +73,7 @@ public class Transaction {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((category == null) ? 0 : category.hashCode());
-        result = prime * result + ((amount == null) ? 0 : amount.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
 
@@ -73,31 +86,16 @@ public class Transaction {
         if (getClass() != obj.getClass())
             return false;
         Transaction other = (Transaction) obj;
-        if (date == null) {
-            if (other.date != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!date.equals(other.date))
-            return false;
-        if (type == null) {
-            if (other.type != null)
-                return false;
-        } else if (!type.equals(other.type))
-            return false;
-        if (category == null) {
-            if (other.category != null)
-                return false;
-        } else if (!category.equals(other.category))
-            return false;
-        if (amount == null) {
-            if (other.amount != null)
-                return false;
-        } else if (!amount.equals(other.amount))
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Transaction [date=" + date + ", type=" + type.getDescription() + ", category=" + category + ", amount=" + amount + "]";
+        return "Transaction [id=" + id + ", date=" + date + ", type=" + type.getDescription() + ", category=" + category + ", amount=" + amount + "]";
     }
 }

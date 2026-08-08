@@ -21,6 +21,13 @@ public class TransactionService {
         return repository.save(transaction);
     }
 
+    public void update(Transaction transaction) {
+        if (transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
+        }
+        repository.update(transaction);
+    }
+
     public List<Transaction> findAll() {
         return repository.findAll();
     }
@@ -41,9 +48,5 @@ public class TransactionService {
 
     public void saveAll(List<? extends Transaction> transactions) {
         repository.saveAll(transactions);
-    }
-
-    public GenericRepository<Transaction, Long> getOriginalRepository() {
-        return this.repository;
     }
 }

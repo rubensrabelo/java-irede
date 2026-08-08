@@ -19,7 +19,6 @@ import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import app.factory.ControllerFactory;
 import app.model.Transaction;
 import app.model.enums.TransactionType;
@@ -118,14 +117,13 @@ public class MainViewController {
 
                         btnEdit.setOnAction(event -> {
                             Transaction transaction = getTableView().getItems().get(getIndex());
-                            openFormWindow(transaction, getIndex());
+                            openFormWindow(transaction);
                         });
 
                         btnDelete.setOnAction(event -> {
-                            int currentIndex = getIndex();
-                            if (currentIndex >= 0 && currentIndex < getTableView().getItems().size()) {
-                                Long idTarget = (long) (currentIndex + 1);
-                                service.deleteById(idTarget);
+                            Transaction transaction = getTableView().getItems().get(getIndex());
+                            if (transaction != null && transaction.getId() != null) {
+                                service.deleteById(transaction.getId());
                                 updateUI();
                             }
                         });
@@ -147,20 +145,18 @@ public class MainViewController {
 
     @FXML
     private void handleNewTransaction() {
-        openFormWindow(null, -1);
+        openFormWindow(null);
     }
 
-    private void openFormWindow(Transaction transactionToEdit, int rowIndex) {
+    private void openFormWindow(Transaction transactionToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
-            
-            // Reutiliza a instância existente do serviço para não duplicar o banco de dados
             loader.setControllerFactory(new ControllerFactory(this.service));
             
             Parent root = loader.load();
             
             FormViewController formController = loader.getController();
-            formController.setMainController(this, transactionToEdit, rowIndex);
+            formController.setMainController(this, transactionToEdit);
 
             Stage stage = new Stage();
             stage.setTitle(transactionToEdit == null ? "Nova Transação" : "Editar Transação");
