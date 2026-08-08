@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 INSERT INTO transactions (transaction_kind, transaction_date, transaction_type, category, amount, month_year) 
 VALUES 
 ('MonthlyTransaction', '2026-08-01', 'INCOME', 'Salário Fixo', 5200.00, '2026-08'),
