@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import app.model.Transaction;
+import app.model.enums.TransactionType;
 import app.repository.GenericRepository;
 
 public class TransactionService {
@@ -32,9 +33,18 @@ public class TransactionService {
         return repository.deleteById(id);
     }
 
+    public boolean delete(Transaction transaction) {
+        List<Transaction> all = repository.findAll();
+        if (all.contains(transaction)) {
+            all.remove(transaction);
+            return true;
+        }
+        return false;
+    }
+
     public BigDecimal calculateTotalBalance() {
         return repository.findAll().stream()
-                .map(t -> t.getType().getDescription().equalsIgnoreCase("Receita") ? t.getAmount() : t.getAmount().negate())
+                .map(t -> t.getType() == TransactionType.INCOME ? t.getAmount() : t.getAmount().negate())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 

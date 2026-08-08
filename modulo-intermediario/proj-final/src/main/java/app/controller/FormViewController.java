@@ -20,6 +20,7 @@ public class FormViewController {
 
     private MainViewController mainController;
     private TransactionService service;
+    private Transaction editingTransaction;
 
     @FXML
     public void initialize() {
@@ -27,9 +28,17 @@ public class FormViewController {
         txtDate.setValue(LocalDate.now());
     }
 
-    public void setMainController(MainViewController mainController, TransactionService service) {
+    public void setMainController(MainViewController mainController, TransactionService service, Transaction transactionToEdit) {
         this.mainController = mainController;
         this.service = service;
+        this.editingTransaction = transactionToEdit;
+
+        if (transactionToEdit != null) {
+            cmbType.setValue(transactionToEdit.getType().getDescription());
+            txtCategory.setText(transactionToEdit.getCategory());
+            txtAmount.setText(transactionToEdit.getAmount().toString());
+            txtDate.setValue(transactionToEdit.getDate());
+        }
     }
 
     @FXML
@@ -46,9 +55,16 @@ public class FormViewController {
             }
 
             BigDecimal amount = new BigDecimal(amountStr);
-            Transaction transaction = new Transaction(date, type, category, amount);
-            
-            service.save(transaction);
+
+            if (editingTransaction != null) {
+                editingTransaction.setDate(date);
+                editingTransaction.setCategory(category);
+                editingTransaction.setAmount(amount);
+                editingTransaction.setType(type);
+            } else {
+                Transaction transaction = new Transaction(date, type, category, amount);
+                service.save(transaction);
+            }
             
             mainController.updateUI();
             closeStage();
