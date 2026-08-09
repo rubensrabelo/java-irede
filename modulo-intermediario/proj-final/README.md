@@ -13,16 +13,17 @@ O sistema permite ao usuario:
 
 ## O que eu fiz de diferente do projeto anterior
 
-Esta versao representa uma reformulacao estrutural completa em relacao ao projeto console inicial, introduzindo praticas modernas de engenharia de software:
+Esta versão representa uma reformulação estrutural completa em relação ao projeto console inicial, introduzindo práticas modernas de engenharia de software:
 
-* **Gerenciamento de Dependencias com Maven:** Migracao do gerenciamento manual de bibliotecas para o Apache Maven, centralizando dependencias modulares e plugins do compilador.
-* **Interface Grafica Reativa com JavaFX:** Substituicao completa do fluxo de terminal via console por uma interface visual dinamica (FXML e CSS) com tabelas reativas e caixas de dialogo controladas.
-* **Persistencia Relacional com MySQL no Docker:** Saida definitiva do armazenamento volatil em memoria RAM para adocao de persistencia robusta em banco de dados MySQL 26.7 rodando em container orquestrado.
-* **Abstracao Dupla com DAO e Repository:** Separacao explicita de responsabilidades onde o `TransactionDAO` manipula scripts SQL puros e o `TransactionDbRepository` gerencia colecoes logicas com Generics.
-* **Inversao de Dependencia e Factory Pattern:** Extincao do acoplamento forte provocado pelo operador `new` dentro de controladores, centralizando o ciclo de vida dos objetos no `ControllerFactory`.
-* **Seguranca Transacional Manual (ACID):** Implementacao de blocos de controle de transacao explicitos (`commit` e `rollback`) com desativacao de `autoCommit` no JDBC para proteger a integridade dos dados.
-* **Hierarquia de Excecoes Personalizadas:** Criacao de erros especificos para evitar vazamento de metadados e credenciais de infraestrutura para as telas do usuario.
-* **Suite de Testes JUnit 5 Dupla:** Estruturacao de testes unitarios puros para regras de negocio e testes de integracao relacional utilizando banco de dados SQLite em memoria.
+* **Gerenciamento de Dependências com Maven:** Migração do gerenciamento manual de bibliotecas para o Apache Maven, centralizando dependências modulares e plugins do compilador.
+* **Interface Gráfica Reativa com JavaFX:** Substituição completa do fluxo de terminal via console por uma interface visual dinâmica (FXML e CSS) com tabelas reativas e caixas de dialogo controladas.
+* **Persistência Relacional com MySQL no Docker:** Saída definitiva do armazenamento volátil em memória RAM para adoção de persistência robusta em banco de dados MySQL rodando em container orquestrado.
+* **Abstração por Interface no Repository via DI:** Introdução de contratos via interfaces genéricas no ecossistema de persistência, desacoplando totalmente a infraestrutura e injetando a dependência diretamente no ciclo de vida do `TransactionService`.
+* **Isolamento de Domínio com DTOs e Mappers:** Implementação de Java Records (DTOs) e conversores dedicados (Mappers) para trafegar dados de forma segura entre os controladores JavaFX e a camada de serviços, impedindo o vazamento de entidades de domínio para a interface visual.
+* **Inversão de Dependência e Factory Pattern:** Extinção do acoplamento forte provocado pelo operador `new` dentro de controladores, centralizando o ciclo de vida dos objetos no `ControllerFactory`.
+* **Segurança Transacional Manual (ACID):** Implementação de blocos de controle de transação explicitos (`commit` e `rollback`) com desativação de `autoCommit` no JDBC para proteger a integridade dos dados.
+* **Hierarquia de Exceções Personalizadas:** Criação de erros específicos para evitar vazamento de metadados e credenciais de infraestrutura para as telas do usuário.
+* **Suíte de Testes JUnit 5 Dupla:** Estruturação de testes unitários puros para regras de negócio e testes de integração relacional utilizando banco de dados SQLite em memória.
 
 ---
 
