@@ -11,6 +11,7 @@ import app.domain.enums.TransactionType;
 import app.repository.GenericRepository;
 import app.shared.exceptions.EntityNotFoundException;
 import app.shared.exceptions.InvalidInputException;
+import app.shared.utils.TransactionCsvParser;
 
 public class TransactionService {
     private final GenericRepository<Transaction, Long> repository;
@@ -69,5 +70,17 @@ public class TransactionService {
                 .map(TransactionMapper::toEntity)
                 .toList();
         repository.saveAll(transactions);
+    }
+
+    public void importFromCsv(String csvData) {
+        List<TransactionRequestDTO> dtos = TransactionCsvParser.deserialize(csvData);
+        if (!dtos.isEmpty()) {
+            this.saveAll(dtos);
+        }
+    }
+
+    public String exportToCsv() {
+        List<TransactionResponseDTO> dtos = this.findAll();
+        return TransactionCsvParser.serialize(dtos);
     }
 }
