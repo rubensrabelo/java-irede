@@ -14,9 +14,12 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import java.io.File;
+import java.nio.file.Files;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -29,13 +32,20 @@ import app.application.service.TransactionService;
 
 public class MainViewController {
 
-    @FXML private Label lblBalance;
-    @FXML private TableView<TransactionResponseDTO> tblTransactions;
-    @FXML private TableColumn<TransactionResponseDTO, LocalDate> colDate;
-    @FXML private TableColumn<TransactionResponseDTO, String> colCategory;
-    @FXML private TableColumn<TransactionResponseDTO, String> colType;
-    @FXML private TableColumn<TransactionResponseDTO, BigDecimal> colAmount;
-    @FXML private TableColumn<TransactionResponseDTO, Void> colActions;
+    @FXML
+    private Label lblBalance;
+    @FXML
+    private TableView<TransactionResponseDTO> tblTransactions;
+    @FXML
+    private TableColumn<TransactionResponseDTO, LocalDate> colDate;
+    @FXML
+    private TableColumn<TransactionResponseDTO, String> colCategory;
+    @FXML
+    private TableColumn<TransactionResponseDTO, String> colType;
+    @FXML
+    private TableColumn<TransactionResponseDTO, BigDecimal> colAmount;
+    @FXML
+    private TableColumn<TransactionResponseDTO, Void> colActions;
 
     private final TransactionService service;
     private ObservableList<TransactionResponseDTO> observableList;
@@ -49,23 +59,29 @@ public class MainViewController {
         try {
             this.observableList = FXCollections.observableArrayList(service.findAll());
 
-            colCategory.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().category()));
-            colAmount.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().amount()));
-            colType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().typeDescription()));
-            colDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().date()));
+            colCategory.setCellValueFactory(
+                    cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().category()));
+            colAmount.setCellValueFactory(
+                    cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().amount()));
+            colType.setCellValueFactory(
+                    cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().typeDescription()));
+            colDate.setCellValueFactory(
+                    cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().date()));
 
             setupDateColumnFormatting();
             setupAmountColumnFormatting();
             setupTypeColumnTranslation();
             setupActionButtons();
-            
+
             tblTransactions.setItems(observableList);
             updateUI();
         } catch (Exception e) {
             System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
             e.printStackTrace();
-            showDatabaseErrorAlert("Não foi possível carregar as informações devido a uma falha na conexão com o banco de dados.");
-            throw new TransactionPersistenceException("Falha crítica ao carregar listagem inicial de dados no repositório.", e);
+            showDatabaseErrorAlert(
+                    "Não foi possível carregar as informações devido a uma falha na conexão com o banco de dados.");
+            throw new TransactionPersistenceException(
+                    "Falha crítica ao carregar listagem inicial de dados no repositório.", e);
         }
     }
 
@@ -77,8 +93,10 @@ public class MainViewController {
         } catch (Exception e) {
             System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
             e.printStackTrace();
-            showDatabaseErrorAlert("Não foi possível atualizar o saldo devido a uma falha na sincronização com o servidor de dados.");
-            throw new TransactionPersistenceException("Falha crítica ao atualizar sincronização de dados e balanço de saldos.", e);
+            showDatabaseErrorAlert(
+                    "Não foi possível atualizar o saldo devido a uma falha na sincronização com o servidor de dados.");
+            throw new TransactionPersistenceException(
+                    "Falha crítica ao atualizar sincronização de dados e balanço de saldos.", e);
         }
     }
 
@@ -132,52 +150,56 @@ public class MainViewController {
     }
 
     private void setupActionButtons() {
-        colActions.setCellFactory(new Callback<TableColumn<TransactionResponseDTO, Void>, TableCell<TransactionResponseDTO, Void>>() {
-            @Override
-            public TableCell<TransactionResponseDTO, Void> call(final TableColumn<TransactionResponseDTO, Void> param) {
-                return new TableCell<TransactionResponseDTO, Void>() {
-                    private final Button btnEdit = new Button("EDITAR");
-                    private final Button btnDelete = new Button("EXCLUIR");
-                    private final HBox pane = new HBox(8, btnEdit, btnDelete);
-
-                    {
-                        pane.setAlignment(javafx.geometry.Pos.CENTER);
-                        btnEdit.getStyleClass().add("btn-table-edit");
-                        btnDelete.getStyleClass().add("btn-table-delete");
-
-                        btnEdit.setOnAction(event -> {
-                            TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
-                            openFormWindow(transaction);
-                        });
-
-                        btnDelete.setOnAction(event -> {
-                            try {
-                                TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
-                                if (transaction != null && transaction.id() != null) {
-                                    service.deleteById(transaction.id());
-                                    updateUI();
-                                }
-                            } catch (Exception e) {
-                                System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
-                                e.printStackTrace();
-                                showDatabaseErrorAlert("Não foi possível excluir o item selecionado devido a uma instabilidade com o banco de dados.");
-                                throw new TransactionPersistenceException("Falha crítica ao executar deleção física por id.", e);
-                            }
-                        });
-                    }
-
+        colActions.setCellFactory(
+                new Callback<TableColumn<TransactionResponseDTO, Void>, TableCell<TransactionResponseDTO, Void>>() {
                     @Override
-                    protected void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(pane);
-                        }
+                    public TableCell<TransactionResponseDTO, Void> call(
+                            final TableColumn<TransactionResponseDTO, Void> param) {
+                        return new TableCell<TransactionResponseDTO, Void>() {
+                            private final Button btnEdit = new Button("EDITAR");
+                            private final Button btnDelete = new Button("EXCLUIR");
+                            private final HBox pane = new HBox(8, btnEdit, btnDelete);
+
+                            {
+                                pane.setAlignment(javafx.geometry.Pos.CENTER);
+                                btnEdit.getStyleClass().add("btn-table-edit");
+                                btnDelete.getStyleClass().add("btn-table-delete");
+
+                                btnEdit.setOnAction(event -> {
+                                    TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
+                                    openFormWindow(transaction);
+                                });
+
+                                btnDelete.setOnAction(event -> {
+                                    try {
+                                        TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
+                                        if (transaction != null && transaction.id() != null) {
+                                            service.deleteById(transaction.id());
+                                            updateUI();
+                                        }
+                                    } catch (Exception e) {
+                                        System.err.println("[LOG CRÍTICO INFRA]: " + e.getMessage());
+                                        e.printStackTrace();
+                                        showDatabaseErrorAlert(
+                                                "Não foi possível excluir o item selecionado devido a uma instabilidade com o banco de dados.");
+                                        throw new TransactionPersistenceException(
+                                                "Falha crítica ao executar deleção física por id.", e);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            protected void updateItem(Void item, boolean empty) {
+                                super.updateItem(item, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                } else {
+                                    setGraphic(pane);
+                                }
+                            }
+                        };
                     }
-                };
-            }
-        });
+                });
     }
 
     @FXML
@@ -185,15 +207,54 @@ public class MainViewController {
         openFormWindow(null);
     }
 
+    @FXML
+    private void handleImportCsv() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Importar Extrato CSV");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos CSV (*.csv)", "*.csv"));
+            Stage stage = (Stage) tblTransactions.getScene().getWindow();
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null) {
+                String csvData = Files.readString(file.toPath());
+                service.importFromCsv(csvData);
+                updateUI();
+            }
+        } catch (Exception e) {
+            System.err.println("[LOG CRÍTICO CSV]: " + e.getMessage());
+            e.printStackTrace();
+            showInterfaceErrorAlert("Não foi possível processar a leitura do arquivo CSV selecionado.");
+        }
+    }
+
+    @FXML
+    private void handleExportCsv() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Exportar Relatório CSV");
+            fileChooser.setInitialFileName("fintrack-relatorio.csv");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos CSV (*.csv)", "*.csv"));
+            Stage stage = (Stage) tblTransactions.getScene().getWindow();
+            File file = fileChooser.showSaveDialog(stage);
+            if (file != null) {
+                String csvData = service.exportToCsv();
+                Files.writeString(file.toPath(), csvData);
+            }
+        } catch (Exception e) {
+            System.err.println("[LOG CRÍTICO CSV]: " + e.getMessage());
+            e.printStackTrace();
+
+            showInterfaceErrorAlert("Não foi possível gerar a gravação do arquivo CSV no destino solicitado.");
+        }
+    }
+
     private void openFormWindow(TransactionResponseDTO transactionToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
             loader.setControllerFactory(new ControllerFactory(this.service));
             Parent root = loader.load();
-
             FormViewController formController = loader.getController();
             formController.setMainController(this, transactionToEdit);
-
             Stage stage = new Stage();
             stage.setTitle(transactionToEdit == null ? "Nova Transação" : "Editar Transação");
             stage.setScene(new Scene(root));
@@ -204,7 +265,8 @@ public class MainViewController {
             System.err.println("[LOG CRÍTICO INTERFACE]: " + e.getMessage());
             e.printStackTrace();
             showInterfaceErrorAlert("Não foi possível inicializar os componentes gráficos da janela solicitada.");
-            throw new VisualRenderingException("Falha crítica de carregamento estrutural do arquivo FXML de formulário.", e);
+            throw new VisualRenderingException(
+                    "Falha crítica de carregamento estrutural do arquivo FXML de formulário.", e);
         }
     }
 
@@ -219,7 +281,7 @@ public class MainViewController {
     private void showInterfaceErrorAlert(String message) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Erro de Renderização");
-        alert.setHeaderText("Falha ao abrir janela");
+        alert.setHeaderText("Falha ao operar arquivos");
         alert.setContentText(message);
         alert.showAndWait();
     }

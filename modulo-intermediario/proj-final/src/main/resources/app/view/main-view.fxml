@@ -37,6 +37,8 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" spacing="10">
                     <children>
+                        <Button onAction="#handleImportCsv" styleClass="btn-secondary" text="Importar CSV" />
+                        <Button onAction="#handleExportCsv" styleClass="btn-secondary" text="Exportar CSV" />
                         <Button onAction="#handleNewTransaction" styleClass="btn-primary" text="Nova Transação" />
                     </children>
                 </HBox>
