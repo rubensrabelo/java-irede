@@ -1,4 +1,4 @@
-package app.exceptions;
+package app.shared.exceptions;
 
 public class DatabaseException extends RuntimeException {
     public DatabaseException(String message) {

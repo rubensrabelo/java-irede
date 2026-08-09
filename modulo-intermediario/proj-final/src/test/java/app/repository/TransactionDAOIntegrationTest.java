@@ -21,9 +21,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import app.exceptions.EntityNotFoundException;
-import app.model.MonthlyTransaction;
-import app.model.Transaction;
+import app.domain.MonthlyTransaction;
+import app.domain.Transaction;
+import app.shared.exceptions.EntityNotFoundException;
 
 public class TransactionDAOIntegrationTest {
 

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="500.0" spacing="25.0" stylesheets="@css/form-style.css" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.controller.FormViewController">
+<VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="500.0" spacing="25.0" stylesheets="@css/form-style.css" xmlns="http://javafx.com" xmlns:fx="http://javafx.com" fx:controller="app.application.controller.FormViewController">
     <padding>
         <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
     </padding>

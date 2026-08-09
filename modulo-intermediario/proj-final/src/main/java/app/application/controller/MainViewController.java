@@ -1,4 +1,4 @@
-package app.controller;
+package app.application.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,13 +20,14 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import app.factory.ControllerFactory;
-import app.model.Transaction;
-import app.model.enums.TransactionType;
-import app.service.TransactionService;
-import app.utils.Formatter;
-import app.exceptions.TransactionPersistenceException;
-import app.exceptions.VisualRenderingException;
+
+import app.shared.exceptions.TransactionPersistenceException;
+import app.shared.exceptions.VisualRenderingException;
+import app.shared.factory.ControllerFactory;
+import app.shared.utils.Formatter;
+import app.application.service.TransactionService;
+import app.domain.Transaction;
+import app.domain.enums.TransactionType;
 
 public class MainViewController {
 

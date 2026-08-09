@@ -1,4 +1,4 @@
-package app.utils;
+package app.shared.utils;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;

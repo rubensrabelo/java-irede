@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import app.exceptions.InvalidInputException;
-import app.model.Transaction;
+
+import app.application.service.TransactionService;
+import app.domain.Transaction;
 import app.repository.GenericRepository;
+import app.shared.exceptions.InvalidInputException;
 
 public class TransactionServiceTest {
 

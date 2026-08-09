@@ -1,4 +1,4 @@
-package app.model.enums;
+package app.domain.enums;
 
 public enum TransactionType {
     INCOME("Entrada"),

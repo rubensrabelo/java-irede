@@ -1,4 +1,4 @@
-package app.exceptions;
+package app.shared.exceptions;
 
 public class InitializationException extends RuntimeException {
     public InitializationException(String message, Throwable cause) {

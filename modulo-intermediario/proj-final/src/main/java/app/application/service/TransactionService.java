@@ -1,13 +1,13 @@
-package app.service;
+package app.application.service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import app.exceptions.EntityNotFoundException;
-import app.exceptions.InvalidInputException;
-import app.model.Transaction;
-import app.model.enums.TransactionType;
+import app.domain.Transaction;
+import app.domain.enums.TransactionType;
 import app.repository.GenericRepository;
+import app.shared.exceptions.EntityNotFoundException;
+import app.shared.exceptions.InvalidInputException;
 
 public class TransactionService {
     private final GenericRepository<Transaction, Long> repository;

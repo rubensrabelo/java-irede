@@ -5,8 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import app.factory.ControllerFactory;
-import app.exceptions.InitializationException;
+import app.shared.exceptions.InitializationException;
+import app.shared.factory.ControllerFactory;
 
 public class Main extends Application {
 

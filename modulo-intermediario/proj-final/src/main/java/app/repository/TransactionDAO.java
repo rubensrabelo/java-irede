@@ -12,8 +12,9 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import app.model.MonthlyTransaction;
-import app.model.Transaction;
+
+import app.domain.MonthlyTransaction;
+import app.domain.Transaction;
 
 public class TransactionDAO {
 

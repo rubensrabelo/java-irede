@@ -1,8 +1,9 @@
-package app.model;
+package app.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import app.model.enums.TransactionType;
+
+import app.domain.enums.TransactionType;
 
 public class Transaction {
     private Long id;

@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import app.config.MySQLConfig;
-import app.exceptions.DatabaseException;
-import app.exceptions.EntityNotFoundException;
-import app.model.Transaction;
+import app.domain.Transaction;
+import app.shared.exceptions.DatabaseException;
+import app.shared.exceptions.EntityNotFoundException;
 
 public class TransactionDbRepository implements GenericRepository<Transaction, Long> {
 

@@ -6,10 +6,10 @@ module app {
     requires io.github.cdimascio.dotenv.java;
 
     opens app to javafx.graphics, javafx.fxml;
-    opens app.controller to javafx.fxml;
-    opens app.model to javafx.base;
+    opens app.application.controller to javafx.fxml;
+    opens app.domain to javafx.base;
     
     exports app;
-    exports app.factory;
-    exports app.exceptions;
+    exports app.shared.factory;
+    exports app.shared.exceptions;
 }

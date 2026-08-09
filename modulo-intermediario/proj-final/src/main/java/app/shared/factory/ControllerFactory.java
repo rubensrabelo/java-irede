@@ -1,12 +1,12 @@
-package app.factory;
+package app.shared.factory;
 
 import javafx.util.Callback;
-import app.controller.MainViewController;
-import app.controller.FormViewController;
+import app.application.controller.MainViewController;
+import app.application.service.TransactionService;
+import app.application.controller.FormViewController;
 import app.repository.TransactionDAO;
 import app.repository.TransactionDbRepository;
-import app.service.TransactionService;
-import app.exceptions.FactoryInstantiationException;
+import app.shared.exceptions.FactoryInstantiationException;
 
 public class ControllerFactory implements Callback<Class<?>, Object> {
 

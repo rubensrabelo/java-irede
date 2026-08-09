@@ -1,4 +1,4 @@
-package app.controller;
+package app.application.controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -10,10 +10,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import app.exceptions.InvalidInputException;
-import app.exceptions.TransactionPersistenceException;
-import app.model.Transaction;
-import app.service.TransactionService;
+
+import app.application.service.TransactionService;
+import app.domain.Transaction;
+import app.shared.exceptions.InvalidInputException;
+import app.shared.exceptions.TransactionPersistenceException;
 
 public class FormViewController {
 

@@ -1,4 +1,4 @@
-package app.exceptions;
+package app.shared.exceptions;
 
 public class VisualRenderingException extends RuntimeException {
     public VisualRenderingException(String message) {

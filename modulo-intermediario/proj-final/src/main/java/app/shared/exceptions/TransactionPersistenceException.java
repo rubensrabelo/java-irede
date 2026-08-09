@@ -1,4 +1,4 @@
-package app.exceptions;
+package app.shared.exceptions;
 
 public class TransactionPersistenceException extends RuntimeException {
     public TransactionPersistenceException(String message) {
