@@ -8,13 +8,15 @@ import app.config.MySQLConfig;
 import app.domain.Transaction;
 import app.shared.exceptions.DatabaseException;
 import app.shared.exceptions.EntityNotFoundException;
+import app.shared.exceptions.BatchPersistenceException;
+import app.shared.exceptions.DataExportException;
 
 public class TransactionDbRepository implements GenericRepository<Transaction, Long> {
 
-    private final TransactionDAO transacaoDAO;
+    private final TransactionDAO transactionDAO;
 
-    public TransactionDbRepository(TransactionDAO transacaoDAO) {
-        this.transacaoDAO = transacaoDAO;
+    public TransactionDbRepository(TransactionDAO transactionDAO) {
+        this.transactionDAO = transactionDAO;
     }
 
     @Override
@@ -22,10 +24,9 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
         if (entity == null) {
             throw new IllegalArgumentException("A entidade não pode ser nula.");
         }
-
         try (Connection conn = MySQLConfig.getConnection()) {
             try {
-                Transaction saved = transacaoDAO.insert(conn, entity);
+                Transaction saved = transactionDAO.insert(conn, entity);
                 conn.commit();
                 return saved;
             } catch (SQLException e) {
@@ -42,10 +43,9 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
         if (entity == null || entity.getId() == null) {
             throw new IllegalArgumentException("A entidade ou o ID não podem ser nulos para atualização.");
         }
-
         try (Connection conn = MySQLConfig.getConnection()) {
             try {
-                int rowsAffected = transacaoDAO.update(conn, entity);
+                int rowsAffected = transactionDAO.update(conn, entity);
                 if (rowsAffected == 0) {
                     throw new EntityNotFoundException("Transação com ID " + entity.getId() + " não foi encontrada para atualização.");
                 }
@@ -62,7 +62,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
     @Override
     public List<Transaction> findAll() {
         try (Connection conn = MySQLConfig.getConnection()) {
-            List<Transaction> list = transacaoDAO.findAll(conn);
+            List<Transaction> list = transactionDAO.findAll(conn);
             conn.commit();
             return list;
         } catch (SQLException e) {
@@ -73,7 +73,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
     @Override
     public Optional<Transaction> findById(Long id) {
         try (Connection conn = MySQLConfig.getConnection()) {
-            Optional<Transaction> transaction = transacaoDAO.findById(conn, id);
+            Optional<Transaction> transaction = transactionDAO.findById(conn, id);
             conn.commit();
             return transaction;
         } catch (SQLException e) {
@@ -85,7 +85,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
     public boolean deleteById(Long id) {
         try (Connection conn = MySQLConfig.getConnection()) {
             try {
-                int rowsAffected = transacaoDAO.deleteById(conn, id);
+                int rowsAffected = transactionDAO.deleteById(conn, id);
                 if (rowsAffected == 0) {
                     throw new EntityNotFoundException("Transação com ID " + id + " não foi encontrada para remoção.");
                 }
@@ -108,7 +108,7 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
         try (Connection conn = MySQLConfig.getConnection()) {
             try {
                 for (Transaction entity : entities) {
-                    transacaoDAO.insert(conn, entity);
+                    transactionDAO.insert(conn, entity);
                 }
                 conn.commit();
             } catch (Exception e) {
@@ -116,14 +116,19 @@ public class TransactionDbRepository implements GenericRepository<Transaction, L
                 throw e;
             }
         } catch (Exception e) {
-            throw new DatabaseException("Erro ao salvar lote de transações via DAO.", e);
+            throw new BatchPersistenceException("Erro crítico ao processar lote transacional de entidades.", e);
         }
     }
 
     @Override
     public void exportTo(List<? super Transaction> destinationList) {
-        if (destinationList != null) {
+        if (destinationList == null) {
+            throw new IllegalArgumentException("A lista de destino não pode ser nula.");
+        }
+        try {
             destinationList.addAll(this.findAll());
+        } catch (Exception e) {
+            throw new DataExportException("Falha ao exportar coleção de dados para a lista de destino.", e);
         }
     }
 }
