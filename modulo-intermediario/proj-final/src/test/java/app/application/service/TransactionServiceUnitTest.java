@@ -164,4 +164,47 @@ public class TransactionServiceUnitTest {
         assertTrue(deleted);
         assertTrue(service.findAll().isEmpty());
     }
+
+    @Test
+    public void testImportFromCsvSuccessfully() {
+        String csvData = "date;type;category;amount\n" +
+                          "2026-08-01;Entrada;Salário Mensal;5500.00\n" +
+                          "2026-08-02;Saída;Aluguel;1200.00";
+
+        service.importFromCsv(csvData);
+
+        List<TransactionResponseDTO> list = service.findAll();
+        assertEquals(2, list.size());
+        assertEquals("Salário Mensal", list.get(0).category());
+        assertEquals(new BigDecimal("5500.00"), list.get(0).amount());
+        assertEquals("Aluguel", list.get(1).category());
+        assertEquals(new BigDecimal("1200.00"), list.get(1).amount());
+    }
+
+    @Test
+    public void testImportFromCsvWithEmptyDataDoesNotInsert() {
+        service.importFromCsv("");
+        assertTrue(service.findAll().isEmpty());
+        
+        service.importFromCsv(null);
+        assertTrue(service.findAll().isEmpty());
+    }
+
+    @Test
+    public void testExportToCsvSuccessfully() {
+        TransactionRequestDTO t1 = new TransactionRequestDTO(LocalDate.of(2026, 8, 1), "Entrada", "Salário Mensal", new BigDecimal("5500.00"));
+        TransactionResponseDTO saved = service.save(t1);
+
+        String csvOutput = service.exportToCsv();
+
+        String expectedHeader = "id;date;type;category;amount\n";
+        String expectedRow = saved.id() + ";2026-08-01;Entrada;Salário Mensal;5500.00\n";
+        assertEquals(expectedHeader + expectedRow, csvOutput);
+    }
+
+    @Test
+    public void testExportToCsvWhenRepositoryIsEmptyReturnsOnlyHeader() {
+        String csvOutput = service.exportToCsv();
+        assertEquals("id;date;type;category;amount\n", csvOutput);
+    }
 }
