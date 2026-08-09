@@ -13,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -25,22 +24,21 @@ import app.shared.exceptions.TransactionPersistenceException;
 import app.shared.exceptions.VisualRenderingException;
 import app.shared.factory.ControllerFactory;
 import app.shared.utils.Formatter;
+import app.application.dto.TransactionResponseDTO;
 import app.application.service.TransactionService;
-import app.domain.Transaction;
-import app.domain.enums.TransactionType;
 
 public class MainViewController {
 
     @FXML private Label lblBalance;
-    @FXML private TableView<Transaction> tblTransactions;
-    @FXML private TableColumn<Transaction, LocalDate> colDate;
-    @FXML private TableColumn<Transaction, String> colCategory;
-    @FXML private TableColumn<Transaction, TransactionType> colType;
-    @FXML private TableColumn<Transaction, BigDecimal> colAmount;
-    @FXML private TableColumn<Transaction, Void> colActions;
+    @FXML private TableView<TransactionResponseDTO> tblTransactions;
+    @FXML private TableColumn<TransactionResponseDTO, LocalDate> colDate;
+    @FXML private TableColumn<TransactionResponseDTO, String> colCategory;
+    @FXML private TableColumn<TransactionResponseDTO, String> colType;
+    @FXML private TableColumn<TransactionResponseDTO, BigDecimal> colAmount;
+    @FXML private TableColumn<TransactionResponseDTO, Void> colActions;
 
     private final TransactionService service;
-    private ObservableList<Transaction> observableList;
+    private ObservableList<TransactionResponseDTO> observableList;
 
     public MainViewController(TransactionService service) {
         this.service = service;
@@ -51,10 +49,10 @@ public class MainViewController {
         try {
             this.observableList = FXCollections.observableArrayList(service.findAll());
 
-            colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-            colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            colType.setCellValueFactory(new PropertyValueFactory<>("type"));
-            colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+            colCategory.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().category()));
+            colAmount.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().amount()));
+            colType.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().typeDescription()));
+            colDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleObjectProperty<>(cellData.getValue().date()));
 
             setupDateColumnFormatting();
             setupAmountColumnFormatting();
@@ -85,7 +83,7 @@ public class MainViewController {
     }
 
     private void setupDateColumnFormatting() {
-        colDate.setCellFactory(column -> new TableCell<Transaction, LocalDate>() {
+        colDate.setCellFactory(column -> new TableCell<TransactionResponseDTO, LocalDate>() {
             @Override
             protected void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
@@ -99,7 +97,7 @@ public class MainViewController {
     }
 
     private void setupAmountColumnFormatting() {
-        colAmount.setCellFactory(column -> new TableCell<Transaction, BigDecimal>() {
+        colAmount.setCellFactory(column -> new TableCell<TransactionResponseDTO, BigDecimal>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
                 super.updateItem(item, empty);
@@ -113,20 +111,19 @@ public class MainViewController {
     }
 
     private void setupTypeColumnTranslation() {
-        colType.setCellFactory(column -> new TableCell<Transaction, TransactionType>() {
+        colType.setCellFactory(column -> new TableCell<TransactionResponseDTO, String>() {
             @Override
-            protected void updateItem(TransactionType item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                     getStyleClass().removeAll("type-income", "type-outcome");
                 } else {
                     getStyleClass().removeAll("type-income", "type-outcome");
-                    if (item == TransactionType.INCOME) {
-                        setText("Entrada");
+                    setText(item);
+                    if ("Entrada".equalsIgnoreCase(item)) {
                         getStyleClass().add("type-income");
-                    } else if (item == TransactionType.OUTCOME) {
-                        setText("Saída");
+                    } else if ("Saída".equalsIgnoreCase(item)) {
                         getStyleClass().add("type-outcome");
                     }
                 }
@@ -135,10 +132,10 @@ public class MainViewController {
     }
 
     private void setupActionButtons() {
-        colActions.setCellFactory(new Callback<TableColumn<Transaction, Void>, TableCell<Transaction, Void>>() {
+        colActions.setCellFactory(new Callback<TableColumn<TransactionResponseDTO, Void>, TableCell<TransactionResponseDTO, Void>>() {
             @Override
-            public TableCell<Transaction, Void> call(final TableColumn<Transaction, Void> param) {
-                return new TableCell<Transaction, Void>() {
+            public TableCell<TransactionResponseDTO, Void> call(final TableColumn<TransactionResponseDTO, Void> param) {
+                return new TableCell<TransactionResponseDTO, Void>() {
                     private final Button btnEdit = new Button("EDITAR");
                     private final Button btnDelete = new Button("EXCLUIR");
                     private final HBox pane = new HBox(8, btnEdit, btnDelete);
@@ -149,15 +146,15 @@ public class MainViewController {
                         btnDelete.getStyleClass().add("btn-table-delete");
 
                         btnEdit.setOnAction(event -> {
-                            Transaction transaction = getTableView().getItems().get(getIndex());
+                            TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
                             openFormWindow(transaction);
                         });
 
                         btnDelete.setOnAction(event -> {
                             try {
-                                Transaction transaction = getTableView().getItems().get(getIndex());
-                                if (transaction != null && transaction.getId() != null) {
-                                    service.deleteById(transaction.getId());
+                                TransactionResponseDTO transaction = getTableView().getItems().get(getIndex());
+                                if (transaction != null && transaction.id() != null) {
+                                    service.deleteById(transaction.id());
                                     updateUI();
                                 }
                             } catch (Exception e) {
@@ -188,18 +185,18 @@ public class MainViewController {
         openFormWindow(null);
     }
 
-    private void openFormWindow(Transaction transactionToEdit) {
+    private void openFormWindow(TransactionResponseDTO transactionToEdit) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/form-view.fxml"));
             loader.setControllerFactory(new ControllerFactory(this.service));
             Parent root = loader.load();
-            
+
             FormViewController formController = loader.getController();
             formController.setMainController(this, transactionToEdit);
 
             Stage stage = new Stage();
             stage.setTitle(transactionToEdit == null ? "Nova Transação" : "Editar Transação");
-            stage.setScene(new Scene(root, 500, 400));
+            stage.setScene(new Scene(root));
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();

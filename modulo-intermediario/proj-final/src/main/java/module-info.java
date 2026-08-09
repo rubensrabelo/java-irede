@@ -7,9 +7,11 @@ module app {
 
     opens app to javafx.graphics, javafx.fxml;
     opens app.application.controller to javafx.fxml;
+    opens app.application.dto to javafx.base;
     opens app.domain to javafx.base;
     
     exports app;
     exports app.shared.factory;
     exports app.shared.exceptions;
+    exports app.application.mapper;
 }

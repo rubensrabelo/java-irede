@@ -11,8 +11,9 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import app.application.dto.TransactionRequestDTO;
+import app.application.dto.TransactionResponseDTO;
 import app.application.service.TransactionService;
-import app.domain.Transaction;
 import app.shared.exceptions.InvalidInputException;
 import app.shared.exceptions.TransactionPersistenceException;
 
@@ -25,7 +26,7 @@ public class FormViewController {
 
     private MainViewController mainController;
     private final TransactionService service;
-    private Transaction editingTransaction;
+    private TransactionResponseDTO editingTransaction;
 
     public FormViewController(TransactionService service) {
         this.service = service;
@@ -37,15 +38,15 @@ public class FormViewController {
         txtDate.setValue(LocalDate.now());
     }
 
-    public void setMainController(MainViewController mainController, Transaction transactionToEdit) {
+    public void setMainController(MainViewController mainController, TransactionResponseDTO transactionToEdit) {
         this.mainController = mainController;
         this.editingTransaction = transactionToEdit;
 
         if (transactionToEdit != null) {
-            cmbType.setValue(transactionToEdit.getType().getDescription());
-            txtCategory.setText(transactionToEdit.getCategory());
-            txtAmount.setText(transactionToEdit.getAmount().toString().replace(".", ","));
-            txtDate.setValue(transactionToEdit.getDate());
+            cmbType.setValue(transactionToEdit.typeDescription());
+            txtCategory.setText(transactionToEdit.category());
+            txtAmount.setText(transactionToEdit.amount().toString().replace(".", ","));
+            txtDate.setValue(transactionToEdit.date());
         }
     }
 
@@ -69,15 +70,12 @@ public class FormViewController {
                 throw new InvalidInputException("O valor numérico digitado é inválido. Utilize apenas números e vírgula.");
             }
 
+            TransactionRequestDTO requestDto = new TransactionRequestDTO(date, type, category, amount);
+
             if (editingTransaction != null) {
-                editingTransaction.setDate(date);
-                editingTransaction.setCategory(category);
-                editingTransaction.setAmount(amount);
-                editingTransaction.setType(type);
-                service.update(editingTransaction);
+                service.update(editingTransaction.id(), requestDto);
             } else {
-                Transaction transaction = new Transaction(date, type, category, amount);
-                service.save(transaction);
+                service.save(requestDto);
             }
             
             mainController.updateUI();
