@@ -27,6 +27,17 @@ Esta versão representa uma reformulação estrutural completa em relação ao p
 
 ---
 
+## Guia de Teste das Funcionalidades CSV
+
+O sistema possui suporte a processamento de arquivos planos. Para testar o botão **"Importar CSV"**, utilize o arquivo de amostra pronto localizado em:
+* [extrato_teste.csv](samples/extrato_teste.csv)
+
+Para mais informações detalhadas sobre o comportamento do fluxo e a descrição das telas do sistema, acesse:
+* [Interface Grafica e Descricao das Telas](./docs/SCREENS.md)
+
+
+---
+
 ## Links de Documentacao
 
 * [Modelagem de Dados do Banco de Dados](./docs/DATA_MODEL.md)
